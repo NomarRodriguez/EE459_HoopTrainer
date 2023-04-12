@@ -16,7 +16,7 @@ void fsr_test(void){
 	char adc_resultx = 0; 
 	adc_resultx = adc_sample(3);
 	
-	if (adc_resultx >= 50){
+	if (adc_resultx >= 30){
 		PORTC |= 1 << PC0; 
 	}else{
 		PORTC &= ~(1 << PC0);

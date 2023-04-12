@@ -16,7 +16,7 @@ void vibration_test(void){
 	char adc_resultx = 0; 
 	adc_resultx = adc_sample(2);
 	
-	if (adc_resultx >= 100){
+	if (adc_resultx >= 40){
 		PORTC |= 1 << PC0; 
 	}else{
 		PORTC &= ~(1 << PC0);
@@ -27,7 +27,7 @@ int vibration_state(void){
 	char adc_resultx = 0; 
 	adc_resultx = adc_sample(2);
 	
-	if (adc_resultx >= 100){
+	if (adc_resultx >= 500){
 		return 1;
 	}else{
 		return 0;
