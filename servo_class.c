@@ -63,6 +63,7 @@ void test_servo(void){
 	_delay_ms(100);
 }
 
+// 0 middle , 646 left(you facing it), 346 right(you facing it)
 void set_servo(int input){
 	width = input;
 	_delay_ms(100);
