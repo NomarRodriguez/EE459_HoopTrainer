@@ -5,22 +5,25 @@
 #include "servo_class.h"
 #include "fsr_class.h"
 #include "irbeam_class.h"
+#include "speedC_class.h"
 
 int main(void)
 {
 	//servo_init();
-	vibration_init();
-	fsr_init();
+	//vibration_init();
+	//fsr_init();
 	//irbeam_init();
 	//DDRC |= 1 << DDC0;
-	int test_variable;
+	//int test_variable;
+	speedC_init();
 	
     while (1) {
+		speedC_1_set(0);
 		//test_servo();
 		//set_servo(346);
 		//irbeam_test();
 		//fsr_test();
-		vibration_test();
+		//vibration_test();
 		//set_servo(646);
 		//_delay_ms(200);
 		//PORTC |= 1 << PC0; 
