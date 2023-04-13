@@ -64,6 +64,7 @@ void test_servo(void){
 }
 
 // 0 middle , 646 left(you facing it), 346 right(you facing it)
+// values may need to be redone if servo is shifted
 void set_servo(int input){
 	width = input;
 	_delay_ms(100);

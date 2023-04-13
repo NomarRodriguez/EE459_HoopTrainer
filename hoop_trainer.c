@@ -9,14 +9,17 @@
 
 void shot_attempt_counter(void);
 void shot_make_counter(void);
+void drill_set(int drill_number);
 
 int shot_attempts = 0;
 int shot_makes = 0;
 
+int drill_flag = 0;
+
 
 int main(void)
 {
-	//servo_init();
+	servo_init();
 	//vibration_init();
 	fsr_init();
 	irbeam_init();
@@ -28,7 +31,7 @@ int main(void)
 		shot_attempt_counter();
 		shot_make_counter();
 		
-
+		drill_set(1);
 		
 		//speedC_1_set(0);
 		//test_servo();
@@ -53,6 +56,7 @@ int main(void)
     return 0;   /* never reached */
 }
 
+// not ideal because delay is used but it works 
 void shot_attempt_counter(void){
 		int ir_state = 0;
 		int ir_flag = 0;
@@ -81,4 +85,22 @@ void shot_make_counter(void){
 		if ((fsr_s == 0) && (fsr_flag == 1)){
 			fsr_flag = 0;
 		}
+}
+
+void drill_set(int drill_number){
+	if(drill_flag == 0){
+		// add more drills as needed 
+		if (drill_number == 1){
+			set_servo(646);
+			//wait 5 seconds
+			_delay_ms(5000);
+			set_servo(0);
+			// turn on return motors 
+			_delay_ms(5000);
+			set_servo(346);
+			//turn on return motors
+			// when user gives input reset drill flag back to 0 
+			drill_flag == 1;
+		}
+	}
 }
