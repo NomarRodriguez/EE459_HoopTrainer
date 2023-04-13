@@ -35,7 +35,7 @@ int main(void)
 
 
     while (1) {
-	adc_resultx = adc_sample(2);
+	adc_resultx = adc_sample(3);
 	
 	if (adc_resultx >= 90){
 		PORTC |= 1 << PC0; 
