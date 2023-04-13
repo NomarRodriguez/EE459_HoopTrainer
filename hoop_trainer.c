@@ -19,19 +19,25 @@ int drill_flag = 0;
 
 int main(void)
 {
-	servo_init();
-	//vibration_init();
-	fsr_init();
-	irbeam_init();
+	//servo_init();
+	vibration_init();
+	//fsr_init();
+	//irbeam_init();
 	DDRC |= 1 << DDC0;
 	//int test_variable;
 	//speedC_init();
 	
     while (1) {
 		shot_attempt_counter();
-		shot_make_counter();
 		
-		drill_set(1);
+		if (shot_attempts == 5) {
+			PORTC |= 1 << PC0;
+		}else{
+			PORTC &= ~(1 << PC0);
+		}
+		//shot_make_counter();
+		
+		//drill_set(1);
 		
 		//speedC_1_set(0);
 		//test_servo();
@@ -60,14 +66,19 @@ int main(void)
 void shot_attempt_counter(void){
 		int ir_state = 0;
 		int ir_flag = 0;
+		int vibe_state = 0;
+		int vibe_flag = 0;
 		ir_state = irbeam_state();
+		vibe_state = vibration_state();
 		
-		if ((ir_state == 1) && (ir_flag == 0)){
+		if (((ir_state == 1) && (ir_flag == 0)) || ((vibe_state == 1) && (vibe_flag == 0))){
 			shot_attempts = shot_attempts + 1;
 			_delay_ms(500);
 			ir_flag = 1;
+			vibe_flag = 1;
 		}else{
 			ir_flag = 0;
+			vibe_flag = 0;
 		}
 }
 
