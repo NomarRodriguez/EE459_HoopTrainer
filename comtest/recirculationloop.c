@@ -23,6 +23,13 @@ void serial_txchar(char);
 #define BAUD 9600               // Baud rate used
 #define MYUBRR (FOSC/16/BAUD-1) // Value for UBRR0 register
 
+#define RCVD_BUF_SIZE  6        // Maximum size of speed data, including @ and '\0'
+
+static volatile unsigned char rcount, recv_full, recv_start;
+static volatile char rbuf[RCVD_BUF_SIZE];
+
+
+
 
 
 //global variables for interrupt
@@ -30,6 +37,8 @@ volatile char buf[18];
 volatile int idx = 0;
 volatile int rec_flag = 0;
 volatile int fullMess = 0;
+
+
 
 int main(void) {
 
@@ -47,21 +56,25 @@ int main(void) {
 
     // Enable interrupts
     UCSR0B |= (1 << RXCIE0);    // Enable receiver interrupts
-    sei();                      // Enable interrupts
+    //sei();                      // Enable interrupts
 
-	char sent_message[] = "ZX";
-	char rec_message[] = "ZX";
+	char sent_message[] = "AAAA\n";
+	char rec_message[] = "AAAA\n";
 
 
     while (1) {                 // Loop forever
 		serial_stringout(sent_message);
-		if (rec_flag == 1){
+		// 0 turns on led in lcd side
+		if (buf == "AAAA\n"){
 			//PORTC |= 1 << PC0; 
 			PORTC &= ~(1 << PC0);
 		}else{
 			//PORTC &= ~(1 << PC0);
 			PORTC |= 1 << PC0;
 		}
+		
+		
+		
 		
     }
 }
@@ -72,10 +85,13 @@ void serial_init(unsigned short ubrr_value)
 {
 
     // Set up USART0 registers
-	// pc4 for hoop side
+	// pc4 for hoop side or pc1 for lcd side
     // Enable tri-state buffer
     DDRD |= (1 << PC1);
     PORTD &= ~(1 << PC1);
+	rcount = 0;                 // Count of characters received
+    recv_full = 0;              // Flag for received buffer full
+    recv_start = 0;		// Flag for start character received
 	//DDRD |= (1 << PC4);
     //PORTD &= ~(1 << PC4);
 
@@ -101,6 +117,27 @@ void serial_stringout(char *s)
 
 }
 
+unsigned char recv_string(char *rp)
+{
+    unsigned char status;
+    char ch, *p;
+
+    cli();
+    if (recv_full) {		// See if new data in rbuf
+	// Could use strcpy(rp, rbuf);
+	p = (char *) rbuf;
+	while ((ch = *p++) != '\0')
+	    *rp++ = ch;
+	*rp = '\0';
+	status = 1;             // Return status = 1
+	recv_full = 0;	        // Clear flag for rbuf full
+    }
+    else
+	status = 0;             // If nothing, return 0
+    sei();
+    return(status);
+}
+
 ISR(USART_RX_vect)
 {
 
@@ -111,7 +148,7 @@ ISR(USART_RX_vect)
 
     buf[idx++] = ch;
     if(idx == 16){
-		rec_flag == 1;
+		rec_flag = 1;
         buf[++idx] = '\0';
         idx = 0;
     }
