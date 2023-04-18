@@ -61,8 +61,8 @@ int main(void) {
     UCSR0B |= (1 << RXCIE0);    // Enable receiver interrupts
     //sei();                      // Enable interrupts
 
-	char sent_message[] = "AAAA\n";
-	char rec_message[] = "AAAA\n";
+	char sent_message[] = "[AAAA]\n";
+	char rec_message[] = "[AAAA]\n";
 
 
     while (1) {                 // Loop forever
