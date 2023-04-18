@@ -55,10 +55,18 @@ int main(void) {
 	char empty_buf [] = "";
 
     while (1) {                 // Loop forever
+		//serial_stringout(sent_message);
 		char *ret;
 		ret = strstr( buf, "D");
-
-		PORTC &= ~(1 << PC0);
+		// 0 turns on led in lcd side
+		if (ret){
+			//PORTC |= 1 << PC0; 
+			PORTC &= ~(1 << PC0);
+			_delay_ms(500);
+		}else{
+			//PORTC &= ~(1 << PC0);
+			PORTC |= 1 << PC0;
+		}
 		
     }
 }
