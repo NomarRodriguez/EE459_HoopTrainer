@@ -11,6 +11,7 @@
 #include <util/delay.h>
 #include <stdio.h>
 #include <avr/interrupt.h>
+#include "serial.h"
 //#include "check9.h"
 
 // Serial communications functions and variables
@@ -25,11 +26,12 @@ void serial_txchar(char);
 
 #define RCVD_BUF_SIZE  6        // Maximum size of speed data, including @ and '\0'
 
+#define SERIAL_START '['
+#define SERIAL_END   ']'
+
+
 static volatile unsigned char rcount, recv_full, recv_start;
 static volatile char rbuf[RCVD_BUF_SIZE];
-
-
-
 
 
 //global variables for interrupt
@@ -37,6 +39,7 @@ volatile char buf[18];
 volatile int idx = 0;
 volatile int rec_flag = 0;
 volatile int fullMess = 0;
+volatile char ch = 0;
 
 
 
@@ -72,14 +75,44 @@ int main(void) {
 			//PORTC &= ~(1 << PC0);
 			PORTC |= 1 << PC0;
 		}
-		
-		
+
+        //for with polling instead of interrupts
+		ch = UDR0;
+		if (ch == SERIAL_START) {   // First character of string?
+	        recv_start = 1;		// Flag that start character received
+	        rcount = 0;		// Index for where next character goes in rbuf
+	        recv_full = 0;          // Clear flag for rbuf full
+            finish_recv();
+        }
 		
 		
     }
 }
 
 /* ----------------------------------------------------------------------- */
+//polling function
+void finish_recv(){
+    while(!recv_full || recv_start){
+        if (ch == SERIAL_END) { // End of transmission?
+	        if (rcount > 1) {	// Anything received?/
+		        rbuf[rcount] = '\0'; // Terminate the string
+		        recv_full = 1;  // Set flag for data received
+	        }
+	    recv_start = 0;	// Packet complete
+        }
+        else if ((ch >= '0' && ch <= '9') || ch == ' ') { // Check for 0-9 and space
+	        if (rcount < RCVD_BUF_SIZE-1){		  // Leave room for the '\0'
+		        rbuf[rcount++] = ch;  // Put in buffer
+            }
+	        else{
+		        recv_start = 0;	// Too much data, reset the receiver
+            }
+        }
+	    else{
+	        recv_start = 0;	// Bad data so reset the receiver
+        }
+    }
+}
 
 void serial_init(unsigned short ubrr_value)
 {
@@ -134,7 +167,7 @@ unsigned char recv_string(char *rp)
     }
     else
 	status = 0;             // If nothing, return 0
-    sei();
+    //sei();
     return(status);
 }
 
