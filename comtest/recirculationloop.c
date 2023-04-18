@@ -11,6 +11,9 @@
 #include <util/delay.h>
 #include <stdio.h>
 #include <avr/interrupt.h>
+#include <string.h>
+#include <stdlib.h>
+
 #include "serial.h"
 //#include "check9.h"
 
@@ -61,16 +64,20 @@ int main(void) {
     UCSR0B |= (1 << RXCIE0);    // Enable receiver interrupts
     sei();                      // Enable interrupts
 
-	char sent_message[] = "[AAAA]\n";
+	char sent_message[] = "Drill A";
 	char rec_message[] = "[AAAA]\n";
+	char empty_buf [] = "";
 
 
     while (1) {                 // Loop forever
 		serial_stringout(sent_message);
+		char *ret;
+		ret = strstr( buf, "Drill A");
 		// 0 turns on led in lcd side
-		if (buf == "AAAA\n"){
+		if (ret){
 			//PORTC |= 1 << PC0; 
 			PORTC &= ~(1 << PC0);
+			_delay_ms(500);
 		}else{
 			//PORTC &= ~(1 << PC0);
 			PORTC |= 1 << PC0;
