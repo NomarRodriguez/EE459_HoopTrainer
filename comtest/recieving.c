@@ -52,18 +52,13 @@ int main(void) {
     sei();                      // Enable interrupts
 
 	char message[] = "D";
+	char empty_buf [] = "";
 
     while (1) {                 // Loop forever
 		char *ret;
 		ret = strstr( buf, "D");
-		if (ret){
-			//PORTC |= 1 << PC0; 
-			// for lcd side, 0 turns on led
-			PORTC &= ~(1 << PC0);
-		}else{
-			//PORTC &= ~(1 << PC0);
-			PORTC |= 1 << PC0;
-		}
+
+		PORTC &= ~(1 << PC0);
 		
     }
 }

@@ -23,7 +23,7 @@ void serial_txchar(char);
 
 // 7372800(hoop side) or 9830400(lcd side)  for FOSC
 
-#define FOSC 9830400           // Clock frequency
+#define FOSC 7372800           // Clock frequency
 #define BAUD 9600               // Baud rate used
 #define MYUBRR (FOSC/16/BAUD-1) // Value for UBRR0 register
 
