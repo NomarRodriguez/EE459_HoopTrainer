@@ -11,6 +11,8 @@
 #include <util/delay.h>
 #include <stdio.h>
 #include <avr/interrupt.h>
+#include <string.h>
+#include <stdlib.h>	
 //#include "check9.h"
 // 7372800 or 9830400  for FOSC
 
@@ -52,8 +54,9 @@ int main(void) {
 	char message[] = "D";
 
     while (1) {                 // Loop forever
-		
-		if (rec_flag == 1){
+		char *ret;
+		ret = strstr( buf, "D");
+		if (ret){
 			//PORTC |= 1 << PC0; 
 			// for lcd side, 0 turns on led
 			PORTC &= ~(1 << PC0);

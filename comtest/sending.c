@@ -11,7 +11,8 @@
 #include <util/delay.h>
 #include <stdio.h>
 #include <avr/interrupt.h>
-
+#include <string.h>
+#include <stdlib.h>	
 //#include "check9.h"
 
 
