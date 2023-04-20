@@ -1,12 +1,3 @@
-/********************************************
- *
- *  Name: Bailey Cislowski
- *  Email: bcislows@usc.edu
- *  Section: Wednesday 2:00
- *  Assignment: Lab 9 - Serial Communications
- *
- ********************************************/
-
 #include <avr/io.h>
 #include <util/delay.h>
 #include <stdio.h>
@@ -50,6 +41,7 @@ int main(void) {
 
     // Initialize the LCD, ADC and serial modules
 	DDRC |= 1 << DDC0;
+	//PORTC |= 1 << PC0;
 
     UBRR0 = MYUBRR; //set buad rate
     UCSR0C = (3 << UCSZ00);               // Async., no parity,
@@ -64,7 +56,7 @@ int main(void) {
     UCSR0B |= (1 << RXCIE0);    // Enable receiver interrupts
     sei();                      // Enable interrupts
 
-	char sent_message[] = "Drill A";
+	char sent_message[] = "Drill 2";
 	char rec_message[] = "[AAAA]\n";
 	char empty_buf [] = "";
 
@@ -72,17 +64,17 @@ int main(void) {
     while (1) {                 // Loop forever
 		serial_stringout(sent_message);
 		char *ret;
-		ret = strstr( buf, "Drill A");
+		ret = strstr( buf, "Drill 2");
 		// 0 turns on led in lcd side
 		if (ret){
-			//PORTC |= 1 << PC0; 
-			PORTC &= ~(1 << PC0);
+			PORTC |= 1 << PC0; 
+			//PORTC &= ~(1 << PC0);
 			_delay_ms(500);
 		}else{
-			//PORTC &= ~(1 << PC0);
-			PORTC |= 1 << PC0;
+			PORTC &= ~(1 << PC0);
+			//PORTC |= 1 << PC0;
 		}
-
+		//PORTC |= 1 << PC0; 
         //for with polling instead of interrupts
 		/*ch = UDR0;
 		if (ch == SERIAL_START) {   // First character of string?
@@ -96,30 +88,6 @@ int main(void) {
     }
 }
 
-/* ----------------------------------------------------------------------- */
-//polling function
-//void finish_recv(){
-    //while(!recv_full || recv_start){
-        //if (ch == SERIAL_END) { // End of transmission?
-	        //if (rcount > 1) {	// Anything received?/
-		      //  rbuf[rcount] = '\0'; // Terminate the string
-		    //    recv_full = 1;  // Set flag for data received
-	      //  }
-	    //recv_start = 0;	// Packet complete
-        //}
-        // /else if ((ch >= '0' && ch <= '9') || ch == ' ') { // Check for 0-9 and space
-	        // /if (rcount < RCVD_BUF_SIZE-1){		  // Leave room for the '\0'
-		      //  rbuf[rcount++] = ch;  // Put in buffer
-            //}
-	        //else{
-		    //    recv_start = 0;	// Too much data, reset the receiver
-          //  }
-        //}
-	    //else{
-	  //      recv_start = 0;	// Bad data so reset the receiver
-    //    }
-  //  }
-//}
 
 void serial_init(unsigned short ubrr_value)
 {
@@ -127,13 +95,10 @@ void serial_init(unsigned short ubrr_value)
     // Set up USART0 registers
 	// pc4 for hoop side or pc1 for lcd side
     // Enable tri-state buffer
-    DDRD |= (1 << PC1);
-    PORTD &= ~(1 << PC1);
-	rcount = 0;                 // Count of characters received
-    recv_full = 0;              // Flag for received buffer full
-    recv_start = 0;		// Flag for start character received
-	//DDRD |= (1 << PC4);
-    //PORTD &= ~(1 << PC4);
+    DDRC |= (1 << PC1);
+    PORTC &= ~(1 << PC1);
+	DDRC |= (1 << PC4);
+    PORTC &= ~(1 << PC4);
 
 
 }
@@ -157,26 +122,7 @@ void serial_stringout(char *s)
 
 }
 
-unsigned char recv_string(char *rp)
-{
-    unsigned char status;
-    char ch, *p;
 
-    cli();
-    if (recv_full) {		// See if new data in rbuf
-	// Could use strcpy(rp, rbuf);
-	p = (char *) rbuf;
-	while ((ch = *p++) != '\0')
-	    *rp++ = ch;
-	*rp = '\0';
-	status = 1;             // Return status = 1
-	recv_full = 0;	        // Clear flag for rbuf full
-    }
-    else
-	status = 0;             // If nothing, return 0
-    sei();
-    return(status);
-}
 
 ISR(USART_RX_vect)
 {
@@ -188,7 +134,6 @@ ISR(USART_RX_vect)
 
     buf[idx++] = ch;
     if(idx == 16){
-		rec_flag = 1;
         buf[++idx] = '\0';
         idx = 0;
     }

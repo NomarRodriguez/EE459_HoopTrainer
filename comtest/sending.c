@@ -1,41 +1,47 @@
-/********************************************
- *
- *  Name: Bailey Cislowski
- *  Email: bcislows@usc.edu
- *  Section: Wednesday 2:00
- *  Assignment: Lab 9 - Serial Communications
- *
- ********************************************/
-
 #include <avr/io.h>
 #include <util/delay.h>
 #include <stdio.h>
 #include <avr/interrupt.h>
 #include <string.h>
 #include <stdlib.h>	
-//#include "check9.h"
 
+
+//#include "check9.h"
 
 // Serial communications functions and variables
 void serial_init(unsigned short);
 void serial_stringout(char *);
 void serial_txchar(char);
 
-// 7372800(hoop side) or 9830400(lcd side)  for FOSC
-
+// 7372800 or 9830400  for FOSC
 #define FOSC 7372800           // Clock frequency
 #define BAUD 9600               // Baud rate used
 #define MYUBRR (FOSC/16/BAUD-1) // Value for UBRR0 register
 
+#define RCVD_BUF_SIZE  6        // Maximum size of speed data, including @ and '\0'
+
+#define SERIAL_START '['
+#define SERIAL_END   ']'
+
+
+static volatile unsigned char rcount, recv_full, recv_start;
+static volatile char rbuf[RCVD_BUF_SIZE];
 
 
 //global variables for interrupt
 volatile char buf[18];
 volatile int idx = 0;
+volatile int rec_flag = 0;
+volatile int fullMess = 0;
+volatile char ch = 0;
+
 
 
 int main(void) {
 
+    // Initialize the LCD, ADC and serial modules
+	DDRC |= 1 << DDC0;
+	PORTC |= 1 << PC0;
 
     UBRR0 = MYUBRR; //set buad rate
     UCSR0C = (3 << UCSZ00);               // Async., no parity,
@@ -43,36 +49,38 @@ int main(void) {
     UCSR0B |= (1 << TXEN0 | 1 << RXEN0);  // Enable RX and TX
     serial_init(MYUBRR);
 
+    
 	//check9_init();
-
-
 
     // Enable interrupts
     UCSR0B |= (1 << RXCIE0);    // Enable receiver interrupts
     sei();                      // Enable interrupts
 
-	char message[] = "D";
+	char sent_message[] = "A";
+	char rec_message[] = "[AAAA]\n";
+	char empty_buf [] = "";
 
 
     while (1) {                 // Loop forever
-		serial_stringout(message);
-		
+		serial_stringout(sent_message);
 
+		
+		
     }
 }
 
-/* ----------------------------------------------------------------------- */
 
 void serial_init(unsigned short ubrr_value)
 {
 
     // Set up USART0 registers
-	// pc4 for hoop side pc1 for controller side
+	// pc4 for hoop side or pc1 for lcd side
     // Enable tri-state buffer
-    //DDRD |= (1 << PC1);
-    //PORTD &= ~(1 << PC1);
-	DDRD |= (1 << PC4);
-    PORTD &= ~(1 << PC4);
+    DDRC |= (1 << PC1);
+    PORTC &= ~(1 << PC1);
+	//DDRC |= (1 << PC4);
+    //PORTC &= ~(1 << PC4);
+
 
 }
 
@@ -94,6 +102,8 @@ void serial_stringout(char *s)
     }
 
 }
+
+
 
 ISR(USART_RX_vect)
 {
