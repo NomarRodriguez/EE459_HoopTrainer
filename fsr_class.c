@@ -27,7 +27,7 @@ int fsr_state(void){
 	char adc_resultx = 0; 
 	adc_resultx = adc_sample(3);
 	
-	if (adc_resultx >= 126){
+	if (adc_resultx >= 100){
 		return 1;
 	}else{
 		return 0;

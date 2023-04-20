@@ -1,5 +1,5 @@
 DEVICE     = atmega328p
-CLOCK      = 9830400
+CLOCK      = 7372800
 PROGRAMMER = -c usbtiny -P usb
 OBJECTS    =  irbeam_class.c hoop_trainer.c fsr_class.c vibration_class.c servo_class.c adc.c speedC_class.c
 FUSES      = -U hfuse:w:0xd9:m -U lfuse:w:0xe0:m

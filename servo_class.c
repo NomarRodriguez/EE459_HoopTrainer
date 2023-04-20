@@ -32,6 +32,9 @@ void pwm_init(void);
 #endif
 #define INITIAL_PW  MIN_PW
 
+#define START_PW      115         // 0.75msec
+#define END_PW      846         // 2.25msec
+
 
 volatile int width;
 
@@ -65,9 +68,23 @@ void test_servo(void){
 
 // 0 middle , 646 left(you facing it), 346 right(you facing it)
 // values may need to be redone if servo is shifted
-void set_servo(int input){
-	width = input;
-	_delay_ms(100);
+void set_servo(int i){
+	width = i;
+	_delay_ms(1000);
+	/*int i;
+	for (i = START_PW; i < END_PW; i -= STEP_PW) {
+		if( i == START_PW){
+			_delay_ms(5000);
+		}else if(i == ((END_PW - START_PW)/2))
+		{
+			_delay_ms(5000);
+		}else if(i = (END_PW-1)){
+			_delay_ms(5000);
+		}
+	    width = i;
+		
+	    _delay_ms(10);
+	}*/
 }
 
 /*

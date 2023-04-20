@@ -41,6 +41,8 @@ int main(void) {
 
     // Initialize the LCD, ADC and serial modules
 	DDRC |= 1 << DDC0;
+	DDRC |= 1 << DDC1;
+	DDRC |= 1 << DDC2;
 	//PORTC |= 1 << PC0;
 
     UBRR0 = MYUBRR; //set buad rate
@@ -56,24 +58,16 @@ int main(void) {
     UCSR0B |= (1 << RXCIE0);    // Enable receiver interrupts
     sei();                      // Enable interrupts
 
-	char sent_message[] = "Drill 2";
+	char sent_message[] = "A";
 	char rec_message[] = "[AAAA]\n";
 	char empty_buf [] = "";
 
 
     while (1) {                 // Loop forever
 		serial_stringout(sent_message);
-		char *ret;
-		ret = strstr( buf, "Drill 2");
-		// 0 turns on led in lcd side
-		if (ret){
-			PORTC |= 1 << PC0; 
-			//PORTC &= ~(1 << PC0);
-			_delay_ms(500);
-		}else{
-			PORTC &= ~(1 << PC0);
-			//PORTC |= 1 << PC0;
-		}
+		recieved_message("A");
+		
+
 		//PORTC |= 1 << PC0; 
         //for with polling instead of interrupts
 		/*ch = UDR0;
@@ -95,8 +89,8 @@ void serial_init(unsigned short ubrr_value)
     // Set up USART0 registers
 	// pc4 for hoop side or pc1 for lcd side
     // Enable tri-state buffer
-    DDRC |= (1 << PC1);
-    PORTC &= ~(1 << PC1);
+    //DDRC |= (1 << PC1);
+    //PORTC &= ~(1 << PC1);
 	DDRC |= (1 << PC4);
     PORTC &= ~(1 << PC4);
 
@@ -120,6 +114,21 @@ void serial_stringout(char *s)
         i++;
     }
 
+}
+
+int recieved_message(char message[]){
+	char *ret;
+	ret = strstr( buf, message);
+		// 0 turns on led in lcd side
+	if (ret){
+		PORTC |= 1 << PC0; 
+		//PORTC &= ~(1 << PC0);
+		return 1;
+	}else{
+		PORTC &= ~(1 << PC0);
+		return 0;
+		//PORTC |= 1 << PC0;
+	}	
 }
 
 

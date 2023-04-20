@@ -19,25 +19,50 @@ int drill_flag = 0;
 
 int main(void)
 {
-	//servo_init();
+	servo_init();
 	vibration_init();
-	//fsr_init();
-	//irbeam_init();
+	fsr_init();
+	irbeam_init();
 	DDRC |= 1 << DDC0;
+	DDRC |= 1 << DDC1;
+	DDRC |= 1 << DDC2;
 	//int test_variable;
-	//speedC_init();
+	speedC_init();
+	
 	
     while (1) {
-		shot_attempt_counter();
+		/*shot_attempt_counter();
+		shot_make_counter();
 		
 		if (shot_attempts == 5) {
-			PORTC |= 1 << PC0;
+			PORTC |= 1 << PC1;
+			//shot_attempts = 0;
 		}else{
-			PORTC &= ~(1 << PC0);
+			PORTC &= ~(1 << PC1);
 		}
-		//shot_make_counter();
+		
+		if (shot_attempts >= 7){
+			shot_attempts = 0;
+		}
+		
+		if (shot_makes == 5) {
+			PORTC |= 1 << PC2;
+			//shot_makes = 0;
+		}else{
+			PORTC &= ~(1 << PC2);
+		}
+		
+		if (shot_makes >= 7){
+			shot_makes = 0;
+		}*/
+		//speedC_1_set(1);
+		speedC_2_set(1);
+		
 		
 		//drill_set(1);
+		
+		//set_servo(185);
+		
 		
 		//speedC_1_set(0);
 		//test_servo();
@@ -102,16 +127,17 @@ void drill_set(int drill_number){
 	if(drill_flag == 0){
 		// add more drills as needed 
 		if (drill_number == 1){
-			set_servo(646);
+			set_servo(185);
 			//wait 5 seconds
 			_delay_ms(5000);
-			set_servo(0);
+			set_servo(100);
 			// turn on return motors 
 			_delay_ms(5000);
-			set_servo(346);
+			set_servo(50);
 			//turn on return motors
 			// when user gives input reset drill flag back to 0 
-			drill_flag == 1;
+			drill_flag = 1;
 		}
 	}
 }
+
