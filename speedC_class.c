@@ -10,7 +10,7 @@ void speedC_init(void){
 	
 	// motor 1
 	DDRD |= 1 << DDD7;
-	DDRB |= 1 << DDB0;
+	DDRD |= 1 << DDD2;
 	
 }
 
@@ -19,15 +19,15 @@ void speedC_1_set(int input){
 	if (input == 1){
 		// forward 
 		PORTD |= 1 << PD7; 
-		PORTB &= ~(1 << PB0);
+		PORTD &= ~(1 << PD2);
 	}else if (input == -1){
 		// reverse 
-		PORTB |= 1 << PB0; 
+		PORTD |= 1 << PD2; 
 		PORTD &= ~(1 << PD7);
 	}else if (input == 0){
 		// stop
 		PORTD &= ~(1 << PD7);
-		PORTB &= ~(1 << PB0);
+		PORTD &= ~(1 << PD2);
 	}
 }
 

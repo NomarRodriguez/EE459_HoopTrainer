@@ -45,18 +45,12 @@ int main(void) {
 	DDRC |= 1 << DDC2;
 	//PORTC |= 1 << PC0;
 
-    UBRR0 = MYUBRR; //set buad rate
-    UCSR0C = (3 << UCSZ00);               // Async., no parity,
-                                          // 1 stop bit, 8 data bits
-    UCSR0B |= (1 << TXEN0 | 1 << RXEN0);  // Enable RX and TX
+   
     serial_init(MYUBRR);
 
     
 	//check9_init();
 
-    // Enable interrupts
-    UCSR0B |= (1 << RXCIE0);    // Enable receiver interrupts
-    sei();                      // Enable interrupts
 
 	char sent_message[] = "A";
 	char rec_message[] = "[AAAA]\n";
@@ -64,7 +58,7 @@ int main(void) {
 
 
     while (1) {                 // Loop forever
-		serial_stringout(sent_message);
+		serial_stringout("A");
 		recieved_message("A");
 		
 
@@ -91,8 +85,15 @@ void serial_init(unsigned short ubrr_value)
     // Enable tri-state buffer
     //DDRC |= (1 << PC1);
     //PORTC &= ~(1 << PC1);
+	UBRR0 = MYUBRR; //set buad rate
+    UCSR0C = (3 << UCSZ00);               // Async., no parity,
+                                          // 1 stop bit, 8 data bits
+    UCSR0B |= (1 << TXEN0 | 1 << RXEN0);  // Enable RX and TX
 	DDRC |= (1 << PC4);
     PORTC &= ~(1 << PC4);
+	
+	UCSR0B |= (1 << RXCIE0);    // Enable receiver interrupts
+    sei();                      // Enable interrupts
 
 
 }
